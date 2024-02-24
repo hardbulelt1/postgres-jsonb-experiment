@@ -249,9 +249,20 @@
                  Index Cond: ((order_id)::text = 'tehTbk'::text)
          Planning Time: 0.060 ms
          Execution Time: 0.351 ms
-
    
      ```
+
+     Пробую обновить order_item по id 10 штук
+     ```
+        EXPLAIN ANALYZE UPDATE order_item SET count_pick = 22 WHERE id BETWEEN 1030 and 1039;
+
+        Update on order_item  (cost=0.42..34.47 rows=0 width=0) (actual time=0.700..0.701 rows=0 loops=1)
+           ->  Index Scan using order_item_pkey on order_item  (cost=0.42..34.47 rows=10 width=20) (actual time=0.130..0.194 rows=10 loops=1)
+                 Index Cond: ((id >= 1030) AND (id <= 1039))
+         Planning Time: 0.465 ms
+         Execution Time: 0.718 ms
+
+     ``` 
       обновление order_item происходит быстрее
    
      Вставка:
