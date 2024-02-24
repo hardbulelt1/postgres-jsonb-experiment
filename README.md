@@ -50,7 +50,7 @@
    CREATE INDEX order_id_table_json_index ON table_jsonb (order_id);
    ```
 
-3. Посмотри стратегию TOAST
+3. Посмотрим стратегию TOAST
 
    order_item:
    
