@@ -187,5 +187,17 @@
      --- | --- 
     order_item | 280 MB 
     table_jsonb | 274 MB
+   
+9. Сравниваем операции вставки/обновления
 
+   ```
+      explain analyse UPDATE table_jsonb set body = 'большой json из 10 товаров' where id = 436;
+
+      Update on table_jsonb  (cost=0.29..8.31 rows=0 width=0) (actual time=1.813..1.814 rows=0 loops=1)
+        ->  Index Scan using table_jsonb_pkey on table_jsonb  (cost=0.29..8.31 rows=1 width=38) (actual time=0.390..0.391 rows=1 loops=1)
+              Index Cond: (id = 436)
+      Planning Time: 0.612 ms
+      Execution Time: 1.833 ms
+
+   ```
    
