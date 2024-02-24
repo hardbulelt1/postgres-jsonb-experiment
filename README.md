@@ -93,10 +93,32 @@
     weight_barcodes | jsonb | extended
     stock_data | jsonb | extended
 
+
+
+   ```
+      select attname,
+       atttypid::regtype,
+       case pg_attribute.attstorage
+           when 'p' THEN 'plain'
+           when 'e' THEN 'external'
+           when 'm' THEN 'main'
+           when 'x' THEN 'extended'
+           end as storage
+      from pg_attribute
+      where attrelid = 'table_jsonb'::regclass
+        and attnum > 0;
+   ```
+
+     attname | atttypeid | storage
+    --- | --- | --- 
+    id | integer | plain
+    order_id | character varying | extended
+    items| jsonb | extended
+   
     // todo: описание полей 
 
 
-4. Заполняем таблицы
+5. Заполняем таблицы
    
    Реляционную таблицу заполняем 300000 записей, а таблицу с jsonb заполняем 100000 в каждой json будет по 3 товара
 6. Смотрим TOAST таблички
