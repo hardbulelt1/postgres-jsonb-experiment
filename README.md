@@ -50,6 +50,9 @@
    ```
 
 3. Посмотри стратегию TOAST
+
+   order_item:
+   
    ```
      select attname,
        atttypid::regtype,
@@ -94,6 +97,8 @@
     stock_data | jsonb | extended
 
 
+
+   table_jsonb:
 
    ```
       select attname,
