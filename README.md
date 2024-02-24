@@ -190,8 +190,10 @@
    
 9. Сравниваем операции вставки/обновления
 
+   Обновление:
+   
    ```
-      explain analyse UPDATE table_jsonb set body = 'большой json из 10 товаров' where id = 436;
+       EXPLAIN ANALYZE UPDATE table_jsonb set body = 'большой json из 10 товаров' where id = 436;
 
       Update on table_jsonb  (cost=0.29..8.31 rows=0 width=0) (actual time=1.813..1.814 rows=0 loops=1)
         ->  Index Scan using table_jsonb_pkey on table_jsonb  (cost=0.29..8.31 rows=1 width=38) (actual time=0.390..0.391 rows=1 loops=1)
@@ -200,4 +202,30 @@
       Execution Time: 1.833 ms
 
    ```
-   
+
+  ```
+      EXPLAIN ANALYZE UPDATE order_item SET count_pick = 22 WHERE id BETWEEN 1030 and 1039;
+
+      Update on order_item  (cost=0.42..41.67 rows=0 width=0) (actual time=5.215..5.215 rows=0 loops=1)
+        ->  Index Scan using order_item_pkey on order_item  (cost=0.42..41.67 rows=10 width=20) (actual time=0.016..0.469 rows=10 loops=1)
+              Index Cond: ((id >= 2030) AND (id <= 2039))
+      Planning Time: 0.141 ms
+      Execution Time: 5.231 ms
+
+  ```
+
+  Вставка:
+
+   ```
+       EXPLAIN ANALYZE INSERT INTO table_jsonb (body) VALUES ('большой json из 10 товаров')
+
+      Insert on table_jsonb  (cost=0.00..0.01 rows=0 width=0) (actual time=1.624..1.624 rows=0 loops=1)
+        ->  Result  (cost=0.00..0.01 rows=1 width=36) (actual time=0.653..0.655 rows=1 loops=1)
+      Planning Time: 0.026 ms
+      Execution Time: 1.644 ms
+
+   ```
+
+   ```
+      todo: Вставка в order_item
+   ```
