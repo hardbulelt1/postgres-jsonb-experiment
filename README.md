@@ -91,4 +91,50 @@
 
     // todo: описание полей 
 
+
+3. Заполняем таблицы
+   Реляционную таблицу заполняем 300000 записей, а таблицу с jsonb заполняем 100000 в каждой json будет по 3 товара
+4. Смотрим TOAST таблички
+   ```
+      SELECT c1.oid, c1.reltoastrelid, c2.relname
+      FROM pg_class AS c1
+               LEFT JOIN pg_class AS c2
+                         ON c1.reltoastrelid = c2.oid
+      WHERE c1.relname = 'order_item';
+   ```
+    oid | reltoastrelid | relname
+    --- | --- | --- 
+    2877391 | 2877395 | pg_toast_2877391
+
+    имя нашей toast таблицы pg_toast_2877391
+
+    ```
+       select * from pg_toast.pg_toast_2877391; // записей нет
+    ```
+
+    смотрим тоже самое для table_jsonb таблицы
+    ```
+       select pg_class.relnamespace::regnamespace, relname
+      from pg_class
+      where oid = (select reltoastrelid
+                   from pg_class
+                   where relname = 'table_jsonb');
+    ```
+
+    relnamespace | relname
+     --- | --- 
+    pg_toast | pg_toast_2877402
+6. Смотрим занимаемое место
+
+   ```
+      SELECT relname AS table_name,
+       pg_size_pretty(pg_total_relation_size(C.oid)) AS total_size
+      FROM pg_class C
+               LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+      WHERE nspname NOT IN ('pg_catalog', 'information_schema')
+        AND C.relkind <> 'i'
+        AND relname in ('table_jsonb', 'order_item')
+      ORDER BY pg_total_relation_size(C.oid) DESC;
+   ```
+
    
