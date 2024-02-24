@@ -198,6 +198,13 @@
     table_jsonb | 354 MB
 
    таблица с jsonb увеличилась почти в 2 раза, реляционная таблица увеличилась меньше
+   
+   Если запустить обновление еще раз, то размер уже не так быстро растет, но таблица table_jsonb все равно увеличивается сильнее
+   
+   table_name | total_size
+     --- | --- 
+    order_item | 609 MB 
+    table_jsonb | 358 MB
 
    Очистим таблицы от мертвых записей:
    ```
@@ -223,39 +230,55 @@
    Обновление:
    
       ```
-          EXPLAIN ANALYZE UPDATE table_jsonb set body = 'большой json из 10 товаров' where id = 436;
+          EXPLAIN ANALYZE UPDATE table_jsonb set body = 'большой json из 10 товаров' where order_id = 'JlbNjZ;
    
-         Update on table_jsonb  (cost=0.29..8.31 rows=0 width=0) (actual time=1.813..1.814 rows=0 loops=1)
-           ->  Index Scan using table_jsonb_pkey on table_jsonb  (cost=0.29..8.31 rows=1 width=38) (actual time=0.390..0.391 rows=1 loops=1)
-                 Index Cond: (id = 436)
-         Planning Time: 0.612 ms
-         Execution Time: 1.833 ms
+         Update on table_jsonb  (cost=0.42..8.44 rows=0 width=0) (actual time=2.856..2.857 rows=0 loops=1)
+           ->  Index Scan using order_id_table_json_index on table_jsonb  (cost=0.42..8.44 rows=1 width=38) (actual time=0.042..0.043 rows=1 loops=1)
+                 Index Cond: ((order_id)::text = 'JlbNjZ'::text)
+         Planning Time: 0.229 ms
+         Execution Time: 2.874 ms
+
    
       ```
 
      ```
-         EXPLAIN ANALYZE UPDATE order_item SET count_pick = 22 WHERE id BETWEEN 1030 and 1039;
+         EXPLAIN ANALYZE UPDATE order_item SET count_pick = 120 WHERE order_id='tehTbk'
    
-         Update on order_item  (cost=0.42..41.67 rows=0 width=0) (actual time=5.215..5.215 rows=0 loops=1)
-           ->  Index Scan using order_item_pkey on order_item  (cost=0.42..41.67 rows=10 width=20) (actual time=0.016..0.469 rows=10 loops=1)
-                 Index Cond: ((id >= 2030) AND (id <= 2039))
-         Planning Time: 0.141 ms
-         Execution Time: 5.231 ms
+         Update on order_item  (cost=0.42..20.49 rows=0 width=0) (actual time=0.338..0.338 rows=0 loops=1)
+           ->  Index Scan using order_id_index on order_item  (cost=0.42..20.49 rows=4 width=20) (actual time=0.068..0.081 rows=3 loops=1)
+                 Index Cond: ((order_id)::text = 'tehTbk'::text)
+         Planning Time: 0.060 ms
+         Execution Time: 0.351 ms
+
    
      ```
-
+      обновление order_item происходит быстрее
+   
      Вставка:
    
       ```
-          EXPLAIN ANALYZE INSERT INTO table_jsonb (body) VALUES ('большой json из 10 товаров')
+          EXPLAIN ANALYZE INSERT INTO table_jsonb (order_id, body) VALUES ('123, 'большой json из 10 товаров')
    
-         Insert on table_jsonb  (cost=0.00..0.01 rows=0 width=0) (actual time=1.624..1.624 rows=0 loops=1)
-           ->  Result  (cost=0.00..0.01 rows=1 width=36) (actual time=0.653..0.655 rows=1 loops=1)
-         Planning Time: 0.026 ms
-         Execution Time: 1.644 ms
+         Insert on table_jsonb  (cost=0.00..0.01 rows=0 width=0) (actual time=3.360..3.360 rows=0 loops=1)
+           ->  Result  (cost=0.00..0.01 rows=1 width=94) (actual time=0.006..0.006 rows=1 loops=1)
+         Planning Time: 0.035 ms
+         Execution Time: 3.375 ms
+
    
       ```
    
       ```
-         todo: Вставка в order_item
+         EXPLAIN ANALYSE INSERT INTO order_item (order_id, sku, bar_code, bar_codes, name, brand, category, count, count_pick, count_courier,
+                        count_to_remove, count_actual, count_wait_return, count_returned, position, price_regular,
+                        price_base, price, price_weight, total_price, unit, image, image_high_array, marking,
+                        weight_barcodes, stock_data)
+         VALUES ... 10 строк с одинаковым order_id
+
+      
+         Insert on order_item  (cost=0.00..0.15 rows=0 width=0) (actual time=0.447..0.448 rows=0 loops=1)
+           ->  Values Scan on ""*VALUES*""  (cost=0.00..0.15 rows=10 width=746) (actual time=0.036..0.073 rows=10 loops=1)
+         Planning Time: 0.328 ms
+         Execution Time: 0.474 ms
+
+         Вставка в реляционную таблицу значительно быстрее
       ```
