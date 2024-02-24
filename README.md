@@ -102,9 +102,9 @@
                          ON c1.reltoastrelid = c2.oid
       WHERE c1.relname = 'order_item';
    ```
-    oid | reltoastrelid | relname
-    --- | --- | --- 
-    2877391 | 2877395 | pg_toast_2877391
+    relnamespace | relname
+     --- | --- 
+    pg_toast | pg_toast_2877391
 
     имя нашей toast таблицы pg_toast_2877391
 
@@ -124,7 +124,11 @@
     relnamespace | relname
      --- | --- 
     pg_toast | pg_toast_2877402
-6. Смотрим занимаемое место
+
+    ```
+       select * from pg_toast.pg_toast_2877402; // 200000 записей
+    ```
+6. Смотрим занимаемое место вместе с индексами и toast таблицей
 
    ```
       SELECT relname AS table_name,
@@ -137,4 +141,10 @@
       ORDER BY pg_total_relation_size(C.oid) DESC;
    ```
 
+   table_name | total_size
+     --- | --- 
+    order_item | 284 MB
+    table_jsonb | 272 MB
+
+   примерно одинаковые размеры, попробем теперь запустить скрипт, чтобы обновить все записи в обеих таблицах и посмотрим как изменится их размер
    
