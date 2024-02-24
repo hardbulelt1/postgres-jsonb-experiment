@@ -194,8 +194,8 @@
 
     table_name | total_size
      --- | --- 
-    order_item | 538 MB 
-    table_jsonb | 344 MB
+    order_item | 543 MB 
+    table_jsonb | 354 MB
 
    таблица с jsonb увеличилась почти в 2 раза, реляционная таблица увеличилась меньше
 
