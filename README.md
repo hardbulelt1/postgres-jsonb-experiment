@@ -46,7 +46,7 @@
        items jsonb
    );
 
-CREATE INDEX order_id_table_json_index ON table_jsonb (order_id);
+   CREATE INDEX order_id_table_json_index ON table_jsonb (order_id);
    ```
 
 3. Посмотри стратегию TOAST
