@@ -150,3 +150,21 @@
 
    Примерно одинаковые размеры, попробем теперь запустить скрипт, чтобы обновить все записи в обеих таблицах и посмотрим как изменится их размер
    
+   Повторяем запрос
+   ```
+      SELECT relname AS table_name,
+       pg_size_pretty(pg_total_relation_size(C.oid)) AS total_size
+      FROM pg_class C
+               LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+      WHERE nspname NOT IN ('pg_catalog', 'information_schema')
+        AND C.relkind <> 'i'
+        AND relname in ('table_jsonb', 'order_item')
+      ORDER BY pg_total_relation_size(C.oid) DESC;
+   ```
+
+    table_name | total_size
+     --- | --- 
+    order_item | 538 MB 
+    table_jsonb | 344 MB
+
+   таблица с jsonb увеличилась почти в 2 раза, реляционная таблица увеличилась меньше
