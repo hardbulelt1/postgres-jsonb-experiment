@@ -39,11 +39,14 @@
 
    Таблица с jsonb полем:
    ```
-     CREATE TABLE table_jsonb
-    (
-        id   SERIAL PRIMARY KEY,
-        body jsonb
-    );
+    CREATE TABLE table_jsonb
+   (
+       id   SERIAL PRIMARY KEY,
+       order_id varchar(20) not null,
+       items jsonb
+   );
+
+CREATE INDEX order_id_table_json_index ON table_jsonb (order_id);
    ```
 
 3. Посмотри стратегию TOAST
