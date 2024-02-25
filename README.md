@@ -195,8 +195,8 @@
 
     table_name | total_size
      --- | --- 
-    order_item | 543 MB 
-    table_jsonb | 354 MB
+    order_item | 354 MB
+    table_jsonb | 543 MB
 
    таблица с jsonb увеличилась почти в 2 раза, реляционная таблица увеличилась меньше
    
@@ -204,8 +204,8 @@
    
    table_name | total_size
      --- | --- 
-    order_item | 609 MB 
-    table_jsonb | 358 MB
+    order_item | 358 MB 
+    table_jsonb | 609 MB
 
    Очистим таблицы от мертвых записей:
    ```
